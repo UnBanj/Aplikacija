@@ -22,13 +22,13 @@ export class CartArticle {
   })
   cartArticleId: number;
 
-  @Column("int", { name: "cart_id", unsigned: true)
+  @Column("int", { name: "cart_id", unsigned: true})
   cartId: number;
 
-  @Column("int", { name: "article_id", unsigned: true)
+  @Column("int", { name: "article_id", unsigned: true})
   articleId: number;
 
-  @Column("int", { name: "quantity", unsigned: true)
+  @Column("int", { name: "quantity", unsigned: true})
   quantity: number;
 
   @ManyToOne(() => Article, (article) => article.cartArticles, {

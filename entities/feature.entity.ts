@@ -17,10 +17,10 @@ export class Feature {
   @PrimaryGeneratedColumn({ type: "int", name: "feature_id", unsigned: true })
   featureId: number;
 
-  @Column("varchar", {length: 32)
+  @Column("varchar", {length: 32})
   name: string;
 
-  @Column("int", { name: "category_id", unsigned: true)
+  @Column("int", { name: "category_id", unsigned: true})
   categoryId: number;
 
   @ManyToOne(() => Category, (category) => category.features, {
@@ -30,6 +30,9 @@ export class Feature {
   @JoinColumn([{ name: "category_id", referencedColumnName: "categoryId" }])
   category: Category;
 
-  @OneToMany(() => ArticleFeature, (articleFeature) => articleFeature.feature)
+  @OneToMany(
+    () => ArticleFeature, 
+    articleFeature=> articleFeature.article
+  )
   articleFeatures: ArticleFeature[];
 }

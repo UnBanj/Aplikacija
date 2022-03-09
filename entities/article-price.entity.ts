@@ -18,7 +18,7 @@ export class ArticlePrice {
   })
   articlePriceId: number;
 
-  @Column("int", { name: "article_id", unsigned: true)
+  @Column("int", { name: "article_id", unsigned: true})
   articleId: number;
 
   @Column("decimal", {
