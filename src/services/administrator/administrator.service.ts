@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Administrator } from 'entities/administator.entity';
-import { resolve } from 'path';
-import { AppModule } from 'src/app.module';
 import { AddAdministratorDto } from 'src/dtos/add.administrator.dto';
 import { EditAdministratorDto } from 'src/dtos/administrator/edit.administrator.dto';
 import { ApiResponse } from 'src/misc/api.response.class';
 import { Repository } from 'typeorm';
+import * as crypto from 'crypto';
 
 
 @Injectable()
