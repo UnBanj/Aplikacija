@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseConfiguration } from 'config/database.configuration';
 import { Administrator } from 'entities/administator.entity';
@@ -14,8 +14,10 @@ import { Photo } from 'entities/photo.entity';
 import { User } from 'entities/user.entity';
 import { AdministratorController } from './controllers/api/administrator.controller';
 import { ArticleController } from './controllers/api/article.controller';
+import { AuthController } from './controllers/api/auth.controller';
 import { CategoryController } from './controllers/api/category.controller';
 import { AppController } from './controllers/app.controller';
+import { AuthMiddleware } from './middlewares/auth.middleware';
 import { AdministratorService } from './services/administrator/administrator.service';
 import { ArticleServise } from './services/article/article.servise';
 import { CategoryServise } from './services/category/category.servise';
@@ -48,14 +50,17 @@ import { CategoryServise } from './services/category/category.servise';
     TypeOrmModule.forFeature([
       Administrator,
       Category,
-      Article
+      Article,
+      ArticlePrice,
+      ArticleFeature
     ])
   ],
   controllers: [
     AppController,
     AdministratorController,
     CategoryController,
-    ArticleController
+    ArticleController,
+    AuthController
   ],
   providers: [
     AdministratorService,
@@ -63,5 +68,16 @@ import { CategoryServise } from './services/category/category.servise';
     ArticleServise,
   
   ],
+  exports: [ //da bi bio dostupan i van modula 
+    AdministratorService,
+  ]
 })
-export class AppModule {}
+export class AppModule implements NestModule{
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+    .apply(AuthMiddleware)
+    .exclude('auth/*')
+    .forRoutes('api/*');
+  }
+
+}
