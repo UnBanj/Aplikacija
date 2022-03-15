@@ -110,6 +110,7 @@ export class ArticleController {
                  },
         })
     )
+    //kada je fajl uploadovan,upis u bazu
     async uploadPhoto(@Param('id') articleId: number,@UploadedFile() photo): Promise<ApiResponse | Photo> {
                
         const newPhoto: Photo = new Photo();
