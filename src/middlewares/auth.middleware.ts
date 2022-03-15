@@ -4,6 +4,7 @@ import { AdministratorService } from "src/services/administrator/administrator.s
 import * as jwt from 'jsonwebtoken';
 import { JwtDataAdministratorDto } from "src/dtos/administrator/jwt.data.administrator.dto";
 import { jwtSecret } from "config/jwt.secret";
+import { catchError } from "rxjs";
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -24,7 +25,13 @@ export class AuthMiddleware implements NestMiddleware {
 
        const tokenString = tokenParts[1];
        //nemogucnost dekodiranja tokena
-       const jwtData: JwtDataAdministratorDto = jwt.verify(tokenString,jwtSecret);
+       let jwtData: JwtDataAdministratorDto;
+       try {
+           jwtData = jwt.verify(tokenString,jwtSecret);
+       } catch(e){
+        throw new HttpException('Bad token found', HttpStatus.UNAUTHORIZED);
+       }
+       
        if (!jwtData){
         throw new HttpException('Bad token found', HttpStatus.UNAUTHORIZED);
        }
@@ -48,7 +55,7 @@ export class AuthMiddleware implements NestMiddleware {
        let sada = new Date();//trenutni datum
        const trenutniTimestamp = sada.getTime()/1000; //da bismo dobili broj sekundi
        
-       if(trenutniTimestamp >= jwtData.ext){//da li je datum isteka manji od trenutnog timestampa(ako je manji znaci da je u proslosti)
+       if(trenutniTimestamp >= jwtData.exp){//da li je datum isteka manji od trenutnog timestampa(ako je manji znaci da je u proslosti)
         throw new HttpException('The token has expired', HttpStatus.UNAUTHORIZED);
        }
      
