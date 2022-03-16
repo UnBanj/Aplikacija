@@ -178,7 +178,8 @@ export class ArticleController {
           //ako fotog.ne postoji
           if (!photo){
               return new ApiResponse('error',-4004,'Photo not found!');
-          }try {
+          }
+          try {
           fs.unlinkSync(StorageConfig.photo.destination + photo.imagePath);
           //za thumb fotog.
           fs.unlinkSync(StorageConfig.photo.destination + StorageConfig.photo.resize.thumb.directory + photo.imagePath);
