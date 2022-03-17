@@ -24,6 +24,7 @@ import { ArticleServise } from './services/article/article.servise';
 import { CategoryServise } from './services/category/category.servise';
 import { FeatureServise } from './services/feature/feature.servise';
 import { PhotoServise } from './services/photo/photo.service';
+import { UserServise } from './services/user/user.servise';
 
 
 
@@ -78,6 +79,7 @@ import { PhotoServise } from './services/photo/photo.service';
     ArticleServise,
     PhotoServise,
     FeatureServise,
+    UserServise
   
   ],
   exports: [ //da bi bio dostupan i van modula 
