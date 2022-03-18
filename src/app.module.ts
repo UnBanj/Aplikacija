@@ -82,8 +82,9 @@ import { UserServise } from './services/user/user.servise';
     UserServise
   
   ],
-  exports: [ //da bi bio dostupan i van modula 
+  exports: [ //da bi bio dostupan i van modula (Middleware-u)
     AdministratorService,
+    UserServise
   ]
 })
 export class AppModule implements NestModule{

@@ -2,13 +2,17 @@ import { HttpException, HttpStatus, Injectable, NestMiddleware } from "@nestjs/c
 import { NextFunction, Request, Response } from "express";
 import { AdministratorService } from "src/services/administrator/administrator.service";
 import * as jwt from 'jsonwebtoken';
-import { JwtDataAdministratorDto } from "src/dtos/administrator/jwt.data.administrator.dto";
+import { JwtDataDto } from "src/dtos/auth/jwt.data.dto";
 import { jwtSecret } from "config/jwt.secret";
 import { catchError } from "rxjs";
+import { UserServise } from "src/services/user/user.servise";
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-   constructor(private readonly administratorService: AdministratorService){ }
+   constructor(
+       public administratorService: AdministratorService,
+       public userService: UserServise
+       ){ }
    
     async use(req: Request, res: Response, next: NextFunction) {
       //nemogucnost dopremanja informacije da je authorization token dat
@@ -25,7 +29,7 @@ export class AuthMiddleware implements NestMiddleware {
 
        const tokenString = tokenParts[1];
        //nemogucnost dekodiranja tokena
-       let jwtData: JwtDataAdministratorDto;
+       let jwtData: JwtDataDto;
        try {
            jwtData = jwt.verify(tokenString,jwtSecret);
        } catch(e){
@@ -45,12 +49,19 @@ export class AuthMiddleware implements NestMiddleware {
        if(jwtData.ua !== req.headers["user-agent"]){
         throw new HttpException('Bad token found', HttpStatus.UNAUTHORIZED);
        }
-      //nepostojeci korisnik
-       const administator = await this.administratorService.getById(jwtData.administratorId);
+      //nepostojeci admin ili korisnik 
+       if(jwtData.role === "administrator") {
+
+       const administator = await this.administratorService.getById(jwtData.id);
        if(!administator){
         throw new HttpException('Account not found', HttpStatus.UNAUTHORIZED);
+           }
+       } else if (jwtData.role === "user"){
+        const user = await this.userService.getById(jwtData.id);
+        if(!user){
+         throw new HttpException('Account not found', HttpStatus.UNAUTHORIZED);
+            }
        }
-
        //provera da li je istekao token
        let sada = new Date();//trenutni datum
        const trenutniTimestamp = sada.getTime()/1000; //da bismo dobili broj sekundi
