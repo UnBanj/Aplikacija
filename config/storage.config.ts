@@ -1,6 +1,7 @@
 export const StorageConfig = {
     photo: {
       destination: '../storage/photos/',
+      urlPrefix: '/assets/photos',
       maxSize: 3 * 1024 * 1024, // 3MB u bajtovima
       resize: {
          thumb: {
@@ -13,6 +14,6 @@ export const StorageConfig = {
             height: 240,
             directory: 'small/'
          },
-      }
-   }
+      },
+   },
 };
