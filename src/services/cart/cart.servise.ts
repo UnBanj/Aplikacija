@@ -15,12 +15,7 @@ export class CartService {
    
         @InjectRepository(CartArticle)
         private readonly cartArticle: Repository<CartArticle>,
-        
-        @InjectRepository(Article)
-        private readonly article: Repository<Article>,
-
-        @InjectRepository(Order)
-        private readonly order: Repository<Order>
+      
     ){ }
 
     async getLastActiveCartByUserId(userId: number): Promise<Cart | null>{
@@ -82,7 +77,8 @@ export class CartService {
                 "user",
                 "cartArticles",
                 "cartArticles.article",
-                "cartArticles.article.category"
+                "cartArticles.article.category",
+                "cartArticles.article.articlePrices"
             ],
         });
      }

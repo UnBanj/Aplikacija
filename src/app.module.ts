@@ -25,6 +25,7 @@ import { ArticleServise } from './services/article/article.servise';
 import { CartService } from './services/cart/cart.servise';
 import { CategoryServise } from './services/category/category.servise';
 import { FeatureServise } from './services/feature/feature.servise';
+import { OrderService } from './services/order/order.service';
 import { PhotoServise } from './services/photo/photo.service';
 import { UserServise } from './services/user/user.servise';
 
@@ -83,7 +84,8 @@ import { UserServise } from './services/user/user.servise';
     PhotoServise,
     FeatureServise,
     UserServise,
-    CartService
+    CartService,
+    OrderService
   
   ],
   exports: [ //da bi bio dostupan i van modula (Middleware-u)
