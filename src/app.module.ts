@@ -17,10 +17,12 @@ import { ArticleController } from './controllers/api/article.controller';
 import { AuthController } from './controllers/api/auth.controller';
 import { CategoryController } from './controllers/api/category.controller';
 import { FeatureController } from './controllers/api/feature.controller';
+import { UserCartController } from './controllers/api/user.cart.controller';
 import { AppController } from './controllers/app.controller';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 import { AdministratorService } from './services/administrator/administrator.service';
 import { ArticleServise } from './services/article/article.servise';
+import { CartService } from './services/cart/cart.servise';
 import { CategoryServise } from './services/category/category.servise';
 import { FeatureServise } from './services/feature/feature.servise';
 import { PhotoServise } from './services/photo/photo.service';
@@ -71,7 +73,8 @@ import { UserServise } from './services/user/user.servise';
     CategoryController,
     ArticleController,
     AuthController,
-    FeatureController
+    FeatureController,
+    UserCartController
   ],
   providers: [
     AdministratorService,
@@ -79,7 +82,8 @@ import { UserServise } from './services/user/user.servise';
     ArticleServise,
     PhotoServise,
     FeatureServise,
-    UserServise
+    UserServise,
+    CartService
   
   ],
   exports: [ //da bi bio dostupan i van modula (Middleware-u)
