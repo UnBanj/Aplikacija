@@ -11,7 +11,7 @@ import {
 import { User } from "./user.entity";
 import { CartArticle } from "./cart-article.entuty";
 import { Order } from "./order.entity";
-import * as Validator from 'class-validator';
+
 
 @Index("fk_cart_user_id", ["userId"], {})
 @Entity("cart")
