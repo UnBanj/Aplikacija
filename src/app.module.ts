@@ -1,6 +1,8 @@
+import { MailerModule } from '@nestjs-modules/mailer';
 import { MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseConfiguration } from 'config/database.configuration';
+import { MailConfig } from 'config/mail.config';
 import { Administrator } from 'src/entities/administator.entity';
 import { ArticleFeature } from 'src/entities/article-feature.entity';
 import { ArticlePrice } from 'src/entities/article-price.entity';
@@ -25,6 +27,7 @@ import { ArticleServise } from './services/article/article.servise';
 import { CartService } from './services/cart/cart.servise';
 import { CategoryServise } from './services/category/category.servise';
 import { FeatureServise } from './services/feature/feature.servise';
+import { OrderMailer } from './services/order/order.mailer.service';
 import { OrderService } from './services/order/order.service';
 import { PhotoServise } from './services/photo/photo.service';
 import { UserServise } from './services/user/user.servise';
@@ -66,7 +69,28 @@ import { UserServise } from './services/user/user.servise';
       Order,
       Photo,
       User
-    ])
+    ]),
+    MailerModule.forRoot({
+      //smtps://username:password@smtp.gmail.com
+      transport: { /* 'smtps://' + MailConfig.username + ':'+
+                              MailConfig.password + '@'+
+                              MailConfig.hostname, */
+      host: MailConfig.hostname,
+      port: 587,
+      secure: false,
+      auth: {
+        user: MailConfig.username,
+        pass: MailConfig.password
+      },
+      tls: {
+        rejectUnauthorized: false
+      }
+    },
+      defaults: {
+        from: MailConfig.senderEmail,
+
+      }
+    }),
   ],
   controllers: [
     AppController,
@@ -85,7 +109,8 @@ import { UserServise } from './services/user/user.servise';
     FeatureServise,
     UserServise,
     CartService,
-    OrderService
+    OrderService,
+    OrderMailer
   
   ],
   exports: [ //da bi bio dostupan i van modula (Middleware-u)
