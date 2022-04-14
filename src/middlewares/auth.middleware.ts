@@ -35,7 +35,7 @@ export class AuthMiddleware implements NestMiddleware {
        } catch(e){
         throw new HttpException('Bad token found', HttpStatus.UNAUTHORIZED);
        }
-       
+       //ako je prazan 
        if (!jwtData){
         throw new HttpException('Bad token found', HttpStatus.UNAUTHORIZED);
        }
