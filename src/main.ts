@@ -14,6 +14,14 @@ async function bootstrap() {
   });
 
   app.useGlobalPipes(new ValidationPipe());
+  
+ // app.enableCors();
+ const cors = require("cors");
+ const corsOptions = {
+  origin: ['http://localhost:4000'],
+  optionsSuccessStatus: 200, // some legacy browsers     (IE11, various SmartTVs) choke on 204
+};
+app.use(cors(corsOptions));
 
   await app.listen(3000);
 }

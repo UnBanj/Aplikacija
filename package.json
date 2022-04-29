@@ -5,6 +5,7 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "proxy": "http://localhost:4000",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",

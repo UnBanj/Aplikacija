@@ -6,7 +6,7 @@ export class JwtDataDto {
     ip: string;
     ua: string;
      // U slučaju da ovde dodamo još  neki podatak koji će trebati u token
-  // automacki će svi prethodni tokeni koji su generisani biti pogrešni
+  // automatski će svi prethodni tokeni koji su generisani biti pogrešni
     toPlanObject(){
         return {
             role: this.role,
