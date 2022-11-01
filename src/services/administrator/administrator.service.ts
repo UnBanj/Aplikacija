@@ -6,13 +6,18 @@ import { EditAdministratorDto } from 'src/dtos/administrator/edit.administrator.
 import { ApiResponse } from 'src/misc/api.response.class';
 import { Repository } from 'typeorm';
 import * as crypto from 'crypto';
+import { AdministratorToken } from 'src/entities/administrator-token.entity';
 
 
 @Injectable()
 export class AdministratorService {
     constructor(
         @InjectRepository(Administrator)
-        private readonly administrator: Repository<Administrator>
+        private readonly administrator: Repository<Administrator>,
+
+        @InjectRepository(AdministratorToken)
+        private readonly administratorToken: Repository<AdministratorToken>,
+
     ){}
     
     getAll(): Promise<Administrator[]>{
@@ -75,6 +80,54 @@ export class AdministratorService {
 
         return this.administrator.save(admin);
      }
+
+      //dodavanje tokena
+   async addToken(administratorId: number, token: string, expiresAt: string){
+    const administratorToken = new AdministratorToken();
+    administratorToken.administratorId = administratorId;
+    administratorToken.token = token;
+    administratorToken.expiresAt= expiresAt;
+
+    return await this.administratorToken.save(administratorToken);//dodajemo ga u repozitorijum
+
+  }
+  //dopremanje tokena
+  async getAdministatorToken(token: string): Promise<AdministratorToken>{
+    return await this.administratorToken.findOne({
+      token: token
+    });
+  }
+
+  async invalidateToken(token: string): Promise<AdministratorToken | ApiResponse>{
+    const administratorToken =await this.administratorToken.findOne({
+     token: token,
+   });
+   
+   if(!administratorToken){
+     return new ApiResponse("error",-10001,"No such refresh token.");
+   }
+   
+   administratorToken.isValid= 0;
+
+   await this.administratorToken.save(administratorToken);
+
+   return await this.getAdministatorToken(token);
+}
+
+async invalidateAdministatorTokens(administratorId: number):Promise<(AdministratorToken | ApiResponse)[]>{
+  const administratorTokens = await this.administratorToken.find({
+    administratorId: administratorId,
+  });
+  
+  const results = [];
+  
+  //uzimamo jedan po jedan administratorToken iz liste
+  for (const userToken of administratorTokens) {
+     results.push(this.invalidateToken(userToken.token));//jednog po jednog invalidiramo
+  }
+
+  return results;
+}
   
 }
 

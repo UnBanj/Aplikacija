@@ -4,7 +4,6 @@ import { AdministratorService } from "src/services/administrator/administrator.s
 import * as jwt from 'jsonwebtoken';
 import { JwtDataDto } from "src/dtos/auth/jwt.data.dto";
 import { jwtSecret } from "config/jwt.secret";
-import { catchError } from "rxjs";
 import { UserServise } from "src/services/user/user.servise";
 
 @Injectable()

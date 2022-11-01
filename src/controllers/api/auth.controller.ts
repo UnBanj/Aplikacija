@@ -8,14 +8,12 @@ import * as jwt from 'jsonwebtoken';
 import { JwtDataDto } from "src/dtos/auth/jwt.data.dto";
 import { Request } from "express";
 import { jwtSecret } from "config/jwt.secret";
-import { DatabaseConfiguration } from "config/database.configuration";
 import { UserRegistrationDto } from "src/dtos/user/user.registation.dto";
 import { UserServise } from "src/services/user/user.servise";
 import { LoginUserDto } from "src/dtos/user/login.user.dto";
 import { JwtRefreshDataDto } from "src/dtos/auth/jwt.refresh.dto";
-import { RoleCheckerGuard } from "src/misc/role.checker.guard";
-import { AllowToRoles } from "src/misc/allow.to.roles.descriptor";
 import { UserRefreshTokenDto } from "src/dtos/auth/user.refresh.token.dto";
+import { AdministratorRefreshTokenDto } from "src/dtos/auth/administrator.refresh.token.dto";
 @Controller('auth')
 export class AuthController {
     constructor(
@@ -53,18 +51,100 @@ export class AuthController {
 
        //potpisivanje tokena
        let token: string = jwt.sign(jwtData.toPlanObject(), jwtSecret);
+       //refresh token
+       const jwtRefreshData = new JwtRefreshDataDto();
+       jwtRefreshData.role = jwtData.role;
+       jwtRefreshData.id = jwtData.id;
+       jwtRefreshData.identity = jwtData.identity;
+       jwtRefreshData.exp = this.getDatePlus(60*60*24*31);
+       jwtRefreshData.ip = jwtData.ip;
+       jwtRefreshData.ua = jwtData. ua;
+
+       let refreshToken: string = jwt.sign(jwtRefreshData.toPlanObject(), jwtSecret);
 
        const responseObject = new LoginInfoDto(
-       administator.administratorId,
-       administator.username,
-       token,
-       "",
-       ""
-
+          administator.administratorId,
+          administator.username,
+          token,
+          refreshToken,
+          this.getIsoDate(jwtRefreshData.exp),
        );
-       
+       //upisivanje tokena u bazu podataka
+       await this.administatorService.addToken(
+          administator.administratorId,
+          refreshToken,
+          this.getDatabaseDateFormat(this.getIsoDate(jwtRefreshData.exp))
+       );
+
        return new Promise(resolve=>resolve(responseObject));
     }
+
+       //refreshovanje tokena
+   //http://localhost:3000/auth/administrator/refresh
+   @Post('administrator/refresh')
+   async administratorTokenRefresh(@Req() req: Request, @Body() data: AdministratorRefreshTokenDto):Promise<LoginInfoDto | ApiResponse>{
+    const administratorToken = await this.administatorService.getAdministatorToken(data.token);
+   //ako token ne postoji
+    if(!administratorToken){
+        return new ApiResponse("error", -10002, "No such refresh token.");
+    }
+    //ako nije validan
+    if(administratorToken.isValid === 0){
+        return new ApiResponse("error", -10003, "The token is no longer valid.");
+    }
+    //ako je istekao token
+    const sada = new Date();
+    const datumIsteka = new Date(administratorToken.expiresAt);
+
+    if(datumIsteka.getTime() < sada.getTime()){
+        return new ApiResponse("error", -10004, "The token has expired.");
+    }
+    
+    let jwtRefreshData: JwtRefreshDataDto;
+    try {
+        jwtRefreshData = jwt.verify(data.token,jwtSecret);
+    } catch(e){
+     throw new HttpException('Bad token found', HttpStatus.UNAUTHORIZED);
+    }
+    //ako je jwtRefreshToken prazan
+    if (!jwtRefreshData){
+        throw new HttpException('Bad token found', HttpStatus.UNAUTHORIZED);
+       }
+       
+       const ip = req.ip.toString();
+      //nepoklapajuca ip adresa
+       if(jwtRefreshData.ip !== req.ip.toString()) {
+        throw new HttpException('Bad token found', HttpStatus.UNAUTHORIZED);
+       }
+      //nepoklapajuci user-agent
+       if(jwtRefreshData.ua !== req.headers["user-agent"]){
+        throw new HttpException('Bad token found', HttpStatus.UNAUTHORIZED);
+       }
+
+       //pravljenje novog tokena
+       const jwtData = new JwtDataDto();
+       jwtData.role = jwtRefreshData.role;
+       jwtData.id = jwtRefreshData.id;
+       jwtData.identity = jwtRefreshData.identity;
+       jwtData.exp = this.getDatePlus(60*5); //5 minuta da traje
+       jwtData.ip = jwtRefreshData.ip;
+       jwtData.ua = jwtRefreshData.ua;
+
+       //potpisivanje tokena
+       let token: string = jwt.sign(jwtData.toPlanObject(), jwtSecret);
+
+       
+       const responseObject = new LoginInfoDto(
+       jwtData.id,
+       jwtData.identity,
+       token,
+       data.token,  //refresh token
+       this.getIsoDate(jwtRefreshData.exp),
+     );
+
+     return responseObject;
+   
+}
 
     //registracija novog korisnika
      @Post('user/register')//Post http://localhost:3000/auth/user/register/
@@ -77,9 +157,8 @@ export class AuthController {
        const user = await this.userService.getByEmail(data.email);
 
        if(!user){
-          return new Promise(resolve=> {
-              resolve(new ApiResponse('error',-3001))
-          })
+          return new Promise(resolve=> 
+              resolve(new ApiResponse('error',-3001)));
        }
 
        const passwordHash = crypto.createHash('sha512');
@@ -87,7 +166,7 @@ export class AuthController {
        const passwordHashString = passwordHash.digest('hex').toUpperCase();
 
        if (user.passwordHash !== passwordHashString) {
-           return new Promise(resolve => (new ApiResponse('error',-3002)));
+           return new Promise(resolve => resolve (new ApiResponse('error',-3002)));
        }
 
        //pravljenje tokena (JWT) za logovanje korisnika 

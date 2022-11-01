@@ -22,6 +22,7 @@ import { CategoryController } from './controllers/api/category.controller';
 import { FeatureController } from './controllers/api/feature.controller';
 import { UserCartController } from './controllers/api/user.cart.controller';
 import { AppController } from './controllers/app.controller';
+import { AdministratorToken } from './entities/administrator-token.entity';
 import { UserToken } from './entities/user-token.entity';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 import { AdministratorService } from './services/administrator/administrator.service';
@@ -29,7 +30,7 @@ import { ArticleServise } from './services/article/article.servise';
 import { CartService } from './services/cart/cart.servise';
 import { CategoryServise } from './services/category/category.servise';
 import { FeatureServise } from './services/feature/feature.servise';
-import { OrderMailer } from './services/order/order.mailer.service';
+//import { OrderMailer } from './services/order/order.mailer.service';
 import { OrderService } from './services/order/order.service';
 import { PhotoServise } from './services/photo/photo.service';
 import { UserServise } from './services/user/user.servise';
@@ -57,7 +58,8 @@ import { UserServise } from './services/user/user.servise';
         Order,
         Photo,
         User,
-        UserToken
+        UserToken,
+        AdministratorToken,
       ]
     }),
     TypeOrmModule.forFeature([
@@ -72,14 +74,15 @@ import { UserServise } from './services/user/user.servise';
       Order,
       Photo,
       User,
-      UserToken
+      UserToken,
+      AdministratorToken,
     ]),
-    MailerModule.forRoot({
+   /* MailerModule.forRoot({
       //smtps://username:password@smtp.gmail.com
       transport: { /* 'smtps://' + MailConfig.username + ':'+
                               MailConfig.password + '@'+
                               MailConfig.hostname, */
-      host: MailConfig.hostname,
+    /*  host: MailConfig.hostname,
       port: 587,
       secure: false,
       auth: {
@@ -94,7 +97,8 @@ import { UserServise } from './services/user/user.servise';
         from: MailConfig.senderEmail,
 
       }
-    }),
+    }), 
+    */
   ],
   controllers: [
     AppController,
@@ -115,7 +119,7 @@ import { UserServise } from './services/user/user.servise';
     UserServise,
     CartService,
     OrderService,
-    OrderMailer
+    //OrderMailer
   
   ],
   exports: [ //da bi bio dostupan i van modula (Middleware-u)

@@ -23,8 +23,8 @@ export class UserRegistrationDto {
     @Validator.IsNotEmpty()
     @Validator.IsPhoneNumber(null)
     phoneNumber: string;
-    @Validator.IsNotEmpty()
-    @Validator.IsString()
-    @Validator.Length(10,512)
+   // @Validator.IsNotEmpty()
+   // @Validator.IsString()
+    //@Validator.Length(10,512)
     postalAdress: string
 }

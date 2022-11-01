@@ -1,4 +1,4 @@
-import { MailerService } from "@nestjs-modules/mailer";
+/*import { MailerService } from "@nestjs-modules/mailer";
 import { Injectable } from "@nestjs/common";
 import { MailConfig } from "config/mail.config";
 import { CartArticle } from "src/entities/cart-article.entuty";
@@ -37,4 +37,4 @@ export class OrderMailer {
                 <p>Ukupan iznos je: ${suma.toFixed(2)} EUR.</p>
                 <p>Potpis..</p>`;
     }
-}
+} */

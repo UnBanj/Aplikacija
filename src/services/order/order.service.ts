@@ -43,11 +43,29 @@ export class OrderService {
         newOrder.cartId = cartId;
         const savedOrder = await this.order.save(newOrder);
 
+        cart.createdAt = new Date();
+        await this.cart.save(cart);
+
         return await this.getById(savedOrder.orderId);
     } 
     
     async getById(orderId: number){
         return await this.order.findOne(orderId, {
+            relations: [
+                "cart",
+                "cart.user",
+                "cart.cartArticles",
+                "cart.cartArticles.article",
+                "cart.cartArticles.article.category",
+                "cart.cartArticles.article.articlePrices"
+
+            ],
+        });
+    }
+   
+    async getAllByUserId(userId: number){
+        return await this.order.find({
+       
             relations: [
                 "cart",
                 "cart.user",

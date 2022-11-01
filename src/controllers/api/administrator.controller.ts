@@ -1,6 +1,5 @@
 import { Body, Controller, Get, Param, Patch, Post, Put, SetMetadata, UseGuards } from "@nestjs/common";
 import { Administrator } from "src/entities/administator.entity";
-import { resolve } from "path";
 import { AddAdministratorDto } from "src/dtos/administrator/add.administrator.dto";
 import { EditAdministratorDto } from "src/dtos/administrator/edit.administrator.dto";
 import { ApiResponse } from "src/misc/api.response.class";
